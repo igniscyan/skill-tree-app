@@ -46,8 +46,17 @@ export const useSkillStore = create<SkillState>((set, get) => {
     const state = get();
     const skill = state.skills.find(s => s.id === skillId);
     if (!skill) return false;
-
+    
+    if (!skill.prerequisiteSkills || skill.prerequisiteSkills.length === 0) {
+      return true;
+    }
+  
     return skill.prerequisiteSkills.every(prereqId => {
+      // Check if the prerequisite skill exists in our loaded skills
+      const prerequisiteExists = state.skills.some(s => s.id === prereqId);
+      if (!prerequisiteExists) {
+        return true; // If prerequisite doesn't exist in loaded skills, consider it met
+      }
       const prereqLevel = state.allocatedPoints[prereqId] || 0;
       return prereqLevel > 0;
     });
@@ -213,13 +222,13 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const currentLevel = state.allocatedPoints[skillId] || 0;
       
       if (currentLevel <= 0) return false;
-
+    
       // Check if any allocated skills depend on this one
       const dependentSkills = state.skills.filter(skill => 
-        skill.prerequisiteSkills.includes(skillId) &&
+        skill.prerequisiteSkills?.includes(skillId) && // Add optional chaining here
         (state.allocatedPoints[skill.id] || 0) > 0
       );
-
+    
       return dependentSkills.length === 0;
     },
 

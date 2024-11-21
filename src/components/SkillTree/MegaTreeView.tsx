@@ -21,7 +21,6 @@ export const MegaTreeView: React.FC = () => {
 
   const categories = getCategories();
   
-  // If no category is selected, select the first one
   React.useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
       setActiveCategory(categories[0]);
@@ -31,11 +30,9 @@ export const MegaTreeView: React.FC = () => {
   const filteredSkills = skills
     .filter(skill => skill.category === activeCategory)
     .sort((a, b) => {
-      // Sort by total requirement points first
       const aReqPoints = a.requirements.body + a.requirements.tech + a.requirements.hardware;
       const bReqPoints = b.requirements.body + b.requirements.tech + b.requirements.hardware;
       if (aReqPoints !== bReqPoints) return aReqPoints - bReqPoints;
-      // Then by sortOrder
       return a.sortOrder - b.sortOrder;
     });
 
@@ -53,14 +50,14 @@ export const MegaTreeView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-cyber-bg-dark p-4">
-      <div className="container mx-auto">
+    <div className="min-h-screen bg-cyber-bg-dark p-2 sm:p-4">
+      <div className="container mx-auto max-w-7xl">
         {/* Import Section */}
         <JsonImport />
 
         {/* Points Display and Clear Button */}
-        <div className="mb-8 flex justify-between items-center">
-          <div className="text-cyber-text text-xl">
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="text-cyber-text text-lg sm:text-xl">
             <span>Available Points: </span>
             <span className="text-cyber-cyan font-bold">{availablePoints}</span>
             <span className="text-cyber-text/60 text-sm ml-4">
@@ -69,7 +66,7 @@ export const MegaTreeView: React.FC = () => {
           </div>
           <button
             onClick={clearAllPoints}
-            className="px-4 py-2 bg-cyber-bg border border-cyber-red text-cyber-red rounded
+            className="w-full sm:w-auto px-4 py-2 bg-cyber-bg border border-cyber-red text-cyber-red rounded
                      hover:bg-cyber-red hover:text-cyber-bg-dark transition-colors"
           >
             Clear All Points
@@ -79,21 +76,21 @@ export const MegaTreeView: React.FC = () => {
         {/* Keystones Section */}
         <div className="mb-8">
           <h2 className="text-cyber-cyan text-xl font-bold mb-4">Core Attributes</h2>
-          <div className="flex justify-center gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {keystones.map(keystone => (
               <div 
                 key={keystone.id}
-                className="bg-cyber-bg rounded-lg border-2 border-opacity-50 p-4 w-64"
+                className="bg-cyber-bg rounded-lg border-2 border-opacity-50 p-4"
                 style={{ borderColor: `rgb(var(--${keystone.id}-color), 0.5)` }}
               >
                 <div className="text-center mb-4">
-                  <h2 className={`text-2xl font-bold mb-1 ${getKeystoneColor(keystone)}`}>
+                  <h2 className={`text-xl sm:text-2xl font-bold mb-1 ${getKeystoneColor(keystone)}`}>
                     {keystone.name}
                   </h2>
                   <div className="text-cyber-text/60 text-sm h-12">
                     {keystone.description}
                   </div>
-                  <div className={`text-3xl font-bold mt-2 ${getKeystoneColor(keystone)}`}>
+                  <div className={`text-2xl sm:text-3xl font-bold mt-2 ${getKeystoneColor(keystone)}`}>
                     {getKeystonePoints(keystone.id)}
                   </div>
                 </div>
@@ -124,13 +121,13 @@ export const MegaTreeView: React.FC = () => {
         </div>
 
         {/* Category Tabs */}
-        <div className="mb-6">
-          <div className="flex gap-2 border-b border-cyber-border">
+        <div className="mb-6 overflow-x-auto">
+          <div className="flex flex-nowrap gap-2 border-b border-cyber-border min-w-min">
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-6 py-3 rounded-t text-lg font-medium transition-colors
+                className={`px-4 py-2 rounded-t text-base sm:text-lg font-medium transition-colors whitespace-nowrap
                   ${activeCategory === category
                     ? 'bg-cyber-bg border-t border-x border-cyber-cyan text-cyber-cyan'
                     : 'bg-cyber-bg-dark border-t border-x border-cyber-border text-cyber-text/60 hover:text-cyber-text'
@@ -142,17 +139,19 @@ export const MegaTreeView: React.FC = () => {
           </div>
         </div>
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-1 gap-2 bg-cyber-bg p-6 rounded-lg border border-cyber-border">
-          {filteredSkills.length > 0 ? (
-            filteredSkills.map(skill => (
-              <CompactSkillNode key={skill.id} skill={skill} />
-            ))
-          ) : (
-            <div className="text-cyber-text/60 text-center py-8">
-              No skills available in this category
-            </div>
-          )}
+        {/* Skills List */}
+        <div className="bg-cyber-bg p-4 sm:p-6 rounded-lg border border-cyber-border">
+          <div className="grid grid-cols-1 gap-2">
+            {filteredSkills.length > 0 ? (
+              filteredSkills.map(skill => (
+                <CompactSkillNode key={skill.id} skill={skill} />
+              ))
+            ) : (
+              <div className="text-cyber-text/60 text-center py-8">
+                No skills available in this category
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

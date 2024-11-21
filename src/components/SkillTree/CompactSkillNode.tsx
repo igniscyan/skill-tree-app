@@ -9,13 +9,13 @@ interface CompactSkillNodeProps {
 }
 
 export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => {
-  const { 
-    getKeystonePoints, 
-    getSkillLevel, 
-    canAllocatePoint, 
-    allocatePoint, 
+  const {
+    getKeystonePoints,
+    getSkillLevel,
+    canAllocatePoint,
+    allocatePoint,
     deallocatePoint,
-    meetsRequirements 
+    meetsRequirements
   } = useSkillStore();
 
   const level = getSkillLevel(skill.id);
@@ -59,7 +59,7 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
           )}
         </div>
       ))}
-      {skill.prerequisiteSkills.length > 0 && (
+      {(skill.prerequisiteSkills && skill.prerequisiteSkills.length > 0) && (
         <div className="mt-3 text-xs text-cyber-text/60">
           Requires: {skill.prerequisiteSkills.join(', ')}
         </div>
@@ -73,7 +73,7 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
         className={`
           relative px-3 py-2 rounded border transition-all duration-200
           ${meetsRequirements(skill.id)
-            ? 'bg-cyber-bg border-cyber-cyan cursor-pointer hover:bg-cyber-bg-dark' 
+            ? 'bg-cyber-bg border-cyber-cyan cursor-pointer hover:bg-cyber-bg-dark'
             : 'bg-cyber-bg-dark border-cyber-border opacity-60 cursor-not-allowed'}
           ${level > 0 ? 'ring-1 ring-cyber-cyan ring-opacity-50' : ''}
         `}
@@ -89,7 +89,7 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             {/* Next level cost */}
             {level < skill.levels.length && (
@@ -97,7 +97,7 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
                 Next: {skill.levels[level]?.pointsRequired}p
               </span>
             )}
-            
+
             {/* Level indicators with costs */}
             <div className="flex gap-1">
               {skill.levels.map((levelData, i) => (
@@ -116,28 +116,28 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
                 </div>
               ))}
             </div>
-            
+
             {/* Requirements */}
             <div className="flex gap-1 text-xs">
               {skill.requirements.body > 0 && (
-                <span className={getKeystonePoints('body') >= skill.requirements.body 
-                  ? 'text-red-400' 
+                <span className={getKeystonePoints('body') >= skill.requirements.body
+                  ? 'text-red-400'
                   : 'text-red-900'
                 }>
                   B{skill.requirements.body}
                 </span>
               )}
               {skill.requirements.tech > 0 && (
-                <span className={getKeystonePoints('tech') >= skill.requirements.tech 
-                  ? 'text-purple-400' 
+                <span className={getKeystonePoints('tech') >= skill.requirements.tech
+                  ? 'text-purple-400'
                   : 'text-purple-900'
                 }>
                   T{skill.requirements.tech}
                 </span>
               )}
               {skill.requirements.hardware > 0 && (
-                <span className={getKeystonePoints('hardware') >= skill.requirements.hardware 
-                  ? 'text-green-400' 
+                <span className={getKeystonePoints('hardware') >= skill.requirements.hardware
+                  ? 'text-green-400'
                   : 'text-green-900'
                 }>
                   H{skill.requirements.hardware}

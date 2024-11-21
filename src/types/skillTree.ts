@@ -16,7 +16,7 @@ export interface Skill {
     tech: number;
     hardware: number;
   };
-  prerequisiteSkills: string[];
+  prerequisiteSkills?: string[];  // Make this optional
   levels: SkillLevel[];
   sortOrder: number;
 }
