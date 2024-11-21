@@ -31,7 +31,6 @@ interface SkillState {
 }
 
 export const useSkillStore = create<SkillState>((set, get) => {
-  // Helper function to check keystone requirements
   const meetsKeystoneRequirements = (skillId: string, keystonePoints: Record<string, number>): boolean => {
     const skill = get().skills.find(s => s.id === skillId);
     if (!skill) return false;
@@ -43,7 +42,6 @@ export const useSkillStore = create<SkillState>((set, get) => {
     );
   };
 
-  // Helper function to check prerequisite skills
   const meetsPrerequisiteRequirements = (skillId: string): boolean => {
     const state = get();
     const skill = state.skills.find(s => s.id === skillId);
@@ -56,7 +54,6 @@ export const useSkillStore = create<SkillState>((set, get) => {
   };
 
   return {
-    // Initial state
     availablePoints: 0,
     keystonePoints: {
       body: 0,
@@ -199,10 +196,8 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const skill = state.skills.find(s => s.id === skillId);
       if (!skill) return false;
 
-      // Check keystone requirements
       if (!state.meetsRequirements(skillId)) return false;
 
-      // Check prerequisite skills
       if (!meetsPrerequisiteRequirements(skillId)) return false;
 
       const currentLevel = state.allocatedPoints[skillId] || 0;

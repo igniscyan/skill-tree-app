@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSkillStore } from './stores/useSkillStore';
 import { MegaTreeView } from './components/SkillTree/MegaTreeView';
 import { sampleSystem } from './data/sampleSystem';
