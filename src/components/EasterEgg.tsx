@@ -38,7 +38,7 @@ export const EasterEgg: React.FC = () => {
          onClick={() => setShowEasterEgg(false)}>
       <div className="bg-cyber-bg p-4 rounded-lg border-2 border-cyber-cyan animate-pulse-cyan">
         <img 
-          src="/doku-easter-egg.png" 
+          src="/doku-easter-egg.jpg" 
           alt="Easter Egg"
           className="max-w-md rounded-lg"
         />
