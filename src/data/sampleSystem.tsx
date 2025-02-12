@@ -275,7 +275,7 @@ export const sampleSystem: SkillSystem = {
             description: 'Automated Core response system',
             category: 'Augments',
             sortOrder: 2,
-            prerequisiteSkills: ['combat-core'],
+            prerequisiteSkills: [],
             requirements: {
                 body: 0,
                 tech: 15,
@@ -324,7 +324,7 @@ export const sampleSystem: SkillSystem = {
             description: 'Advanced ammunition systems',
             category: 'Augments',
             sortOrder: 2,
-            prerequisiteSkills: ['heavy-weapons'],
+            prerequisiteSkills: [],
             requirements: {
                 body: 0,
                 tech: 15,
@@ -471,7 +471,7 @@ export const sampleSystem: SkillSystem = {
             description: 'Enhanced melee combat',
             category: 'Weapons',
             sortOrder: 4,
-            prerequisiteSkills: ['fists'],
+            prerequisiteSkills: [],
             requirements: {
                 body: 10,
                 tech: 5,
@@ -519,7 +519,7 @@ export const sampleSystem: SkillSystem = {
             description: 'High-powered sidearm',
             category: 'Weapons',
             sortOrder: 6,
-            prerequisiteSkills: ['pistol'],
+            prerequisiteSkills: [],
             requirements: {
                 body: 0,
                 tech: 0,
