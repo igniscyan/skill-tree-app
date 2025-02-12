@@ -47,7 +47,7 @@ export const MegaTreeView: React.FC = () => {
       case 'tech':
         return 'text-purple-400 border-purple-400 hover:bg-purple-400/10';
       case 'hardware':
-        return 'text-green-400 border-green-400 hover:bg-green-400/10';
+        return 'text-white border-white hover:bg-white/10';
       default:
         return 'text-cyber-cyan border-cyber-cyan hover:bg-cyber-cyan/10';
     }

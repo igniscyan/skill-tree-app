@@ -143,7 +143,8 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const currentPoints = state.keystonePoints[keystoneId];
       const diff = points - currentPoints;
       
-      if (points < 0) return;
+      // Prevent going over 15 points
+      if (points < 0 || points > 50) return;
       
       if (diff > 0 && state.availablePoints < diff) return;
       

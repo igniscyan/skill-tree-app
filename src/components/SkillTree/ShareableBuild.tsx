@@ -45,7 +45,7 @@ export const ShareableBuild: React.FC<ShareableBuildProps> = ({ onClose }) => {
       case 'Augments':
         return 'text-purple-400 border-purple-400 bg-purple-400/10';
       case 'Devices':
-        return 'text-green-400 border-green-400 bg-green-400/10';
+        return 'text-white border-white bg-white/10';
       case 'Attachments':
         return 'text-yellow-400 border-yellow-400 bg-yellow-400/10';
       case 'Weapons':

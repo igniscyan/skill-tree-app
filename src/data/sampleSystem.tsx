@@ -421,7 +421,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'throwingKnives',
-            name: 'Throwing Knives',
+            name: 'TTK',
             description: 'Ranged throwing weapons',
             category: 'Weapons',
             sortOrder: 2,
@@ -444,7 +444,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'sword',
-            name: 'Sword',
+            name: 'Akanami',
             description: 'Advanced melee weapon',
             category: 'Weapons',
             sortOrder: 3,
@@ -467,7 +467,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'augmentedFists',
-            name: 'Augmented Fists',
+            name: 'Dusters',
             description: 'Enhanced melee combat',
             category: 'Weapons',
             sortOrder: 4,
@@ -492,7 +492,7 @@ export const sampleSystem: SkillSystem = {
         // Sidearms
         {
             id: 'pistol',
-            name: 'Pistol',
+            name: 'Major',
             description: 'Basic sidearm',
             category: 'Weapons',
             sortOrder: 5,
@@ -515,7 +515,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'revolver',
-            name: 'Revolver',
+            name: 'Deckard',
             description: 'High-powered sidearm',
             category: 'Weapons',
             sortOrder: 6,
@@ -538,7 +538,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'pdw',
-            name: 'Personal Defense Weapon',
+            name: 'Geist',
             description: 'Compact defensive weapon',
             category: 'Weapons',
             sortOrder: 7,
@@ -561,7 +561,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'burstPistol',
-            name: 'Burst Pistol',
+            name: 'Double-Tap',
             description: 'Burst-fire sidearm',
             category: 'Weapons',
             sortOrder: 8,
@@ -584,7 +584,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'machinePistol',
-            name: 'Machine Pistol',
+            name: 'Omen',
             description: 'Automatic sidearm',
             category: 'Weapons',
             sortOrder: 9,
@@ -608,7 +608,7 @@ export const sampleSystem: SkillSystem = {
         // Shotguns
         {
             id: 'sawnOff',
-            name: 'Short Shotgun',
+            name: 'Cerberus',
             description: 'Compact shotgun',
             category: 'Weapons',
             sortOrder: 10,
@@ -631,7 +631,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'shotgun',
-            name: 'Shotgun',
+            name: 'Master-Key',
             description: 'Standard shotgun',
             category: 'Weapons',
             sortOrder: 11,
@@ -654,7 +654,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'autoShotgun',
-            name: 'Auto Shotgun',
+            name: 'Typhon',
             description: 'Automatic shotgun',
             category: 'Weapons',
             sortOrder: 12,
@@ -678,7 +678,7 @@ export const sampleSystem: SkillSystem = {
         // SMGs and Rifles
         {
             id: 'smg',
-            name: 'Submachine Gun',
+            name: 'Icarus',
             description: 'Close-range automatic weapon',
             category: 'Weapons',
             sortOrder: 13,
@@ -701,7 +701,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'assaultRifle',
-            name: 'Assault Rifle',
+            name: 'Custodian',
             description: 'Versatile automatic rifle',
             category: 'Weapons',
             sortOrder: 14,
@@ -724,7 +724,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'lmg',
-            name: 'Light Machine Gun',
+            name: 'Inhibitor',
             description: 'Heavy automatic weapon',
             category: 'Weapons',
             sortOrder: 15,
@@ -748,7 +748,7 @@ export const sampleSystem: SkillSystem = {
         // Precision Weapons
         {
             id: 'boltActionRifle',
-            name: 'Bolt Action Rifle',
+            name: 'Vigil',
             description: 'High-powered precision rifle',
             category: 'Weapons',
             sortOrder: 16,
@@ -771,7 +771,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'dmr',
-            name: 'Marksman Rifle',
+            name: 'Sentinel',
             description: 'Semi-automatic precision rifle',
             category: 'Weapons',
             sortOrder: 17,
@@ -794,7 +794,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'burstRifle',
-            name: 'Burst Rifle',
+            name: 'Helix',
             description: 'Burst-fire rifle',
             category: 'Weapons',
             sortOrder: 18,
@@ -817,7 +817,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'battleRifle',
-            name: 'Battle Rifle',
+            name: 'Nexus',
             description: 'High-caliber combat rifle',
             category: 'Weapons',
             sortOrder: 19,
@@ -841,7 +841,7 @@ export const sampleSystem: SkillSystem = {
         // Heavy Weapons
         {
             id: 'grenadeLauncher',
-            name: 'Grenade Launcher',
+            name: 'Warrant',
             description: 'Explosive projectile launcher',
             category: 'Weapons',
             sortOrder: 20,
@@ -864,7 +864,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'rocketLauncher',
-            name: 'Rocket Launcher',
+            name: 'Blackout',
             description: 'Heavy explosive weapon',
             category: 'Weapons',
             sortOrder: 21,
@@ -887,7 +887,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'minigun',
-            name: 'Heavy Support Weapon',
+            name: 'Umbra',
             description: 'High-rate-of-fire heavy weapon',
             category: 'Weapons',
             sortOrder: 22,
@@ -910,7 +910,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'amr',
-            name: 'Anti-Materiel Rifle',
+            name: 'Hole-Punch',
             description: 'Heavy sniper rifle',
             category: 'Weapons',
             sortOrder: 23,
@@ -933,7 +933,7 @@ export const sampleSystem: SkillSystem = {
         },
         {
             id: 'heavyLaser',
-            name: 'Heavy Laser Weapon',
+            name: 'Talon',
             description: 'Advanced energy weapon',
             category: 'Weapons',
             sortOrder: 24,

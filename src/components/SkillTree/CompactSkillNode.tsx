@@ -144,8 +144,8 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
               )}
               {skill.requirements.hardware > 0 && (
                 <span className={getKeystonePoints('hardware') >= skill.requirements.hardware 
-                  ? 'text-green-400' 
-                  : 'text-green-900'
+                  ? 'text-white' 
+                  : 'text-white/30'
                 }>
                   H{skill.requirements.hardware}
                 </span>
