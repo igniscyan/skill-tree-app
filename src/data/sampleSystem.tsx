@@ -1,7 +1,7 @@
 import { SkillSystem } from '../types/skillTree';
 
 export const sampleSystem: SkillSystem = {
-    availablePoints: 100,
+    availablePoints: 150,
     keystones: [
         {
             id: 'body',

@@ -58,7 +58,22 @@ interface SkillState {
   getFoundationPerks: () => FoundationPerks;
 }
 
+const DEFAULT_POINTS = 150;
+
 export const useSkillStore = create<SkillState>((set, get) => {
+  const initialState = {
+    availablePoints: DEFAULT_POINTS,
+    keystonePoints: {
+      body: 0,
+      tech: 0,
+      hardware: 0
+    },
+    allocatedPoints: {},
+    skills: [],
+    keystones: [],
+    activeCategory: ''
+  };
+
   const meetsKeystoneRequirements = (skillId: string, keystonePoints: Record<string, number>): boolean => {
     const skill = get().skills.find(s => s.id === skillId);
     if (!skill) return false;
@@ -111,16 +126,7 @@ export const useSkillStore = create<SkillState>((set, get) => {
   };
 
   return {
-    availablePoints: 0,
-    keystonePoints: {
-      body: 0,
-      tech: 0,
-      hardware: 0
-    },
-    allocatedPoints: {},
-    skills: [],
-    keystones: [],
-    activeCategory: '',
+    ...initialState,
 
     getCategories: () => {
       const state = get();
@@ -234,17 +240,20 @@ export const useSkillStore = create<SkillState>((set, get) => {
     },
 
     loadSkillSystem: (system) => {
+      // Force the available points to be 150
+      const points = DEFAULT_POINTS;
+      
       set({
-        skills: system.skills,
-        keystones: system.keystones,
+        skills: system.skills || [],
+        keystones: system.keystones || [],
         allocatedPoints: {},
         keystonePoints: {
           body: 0,
           tech: 0,
           hardware: 0
         },
-        activeCategory: system.skills[0]?.category || '',
-        availablePoints: system.availablePoints  
+        activeCategory: system.skills?.[0]?.category || '',
+        availablePoints: points
       });
     },
 

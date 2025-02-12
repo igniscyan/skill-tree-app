@@ -6,11 +6,27 @@ import { sampleSystem } from './data/sampleSystem';
 import { EasterEgg } from './components/EasterEgg';
 
 function App() {
-  const { loadSkillSystem } = useSkillStore();
+  const { loadSkillSystem, setAvailablePoints } = useSkillStore();
 
   useEffect(() => {
-    loadSkillSystem(sampleSystem);
-  }, [loadSkillSystem]);
+    // Force a clean initialization
+    loadSkillSystem({
+      ...sampleSystem,
+      availablePoints: 150
+    });
+
+    // Additional safety check
+    setAvailablePoints(150);
+
+    return () => {
+      loadSkillSystem({
+        ...sampleSystem,
+        availablePoints: 0,
+        skills: [],
+        keystones: []
+      });
+    };
+  }, [loadSkillSystem, setAvailablePoints]);
 
   return (
     <div className="min-h-screen bg-cyber-bg-dark">
