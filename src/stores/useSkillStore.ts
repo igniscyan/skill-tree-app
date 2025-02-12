@@ -60,6 +60,12 @@ interface SkillState {
 
 const DEFAULT_POINTS = 150;
 
+const hasZeroRequirements = (skill: Skill): boolean => {
+  return skill.requirements.body === 0 && 
+         skill.requirements.tech === 0 && 
+         skill.requirements.hardware === 0;
+};
+
 export const useSkillStore = create<SkillState>((set, get) => {
   const initialState = {
     availablePoints: DEFAULT_POINTS,
@@ -186,6 +192,17 @@ export const useSkillStore = create<SkillState>((set, get) => {
       
       if (!nextLevel) return false;
 
+      // If it's a zero-requirement skill and at level 0, don't consume points
+      if (hasZeroRequirements(skill) && currentLevel === 0) {
+        set(state => ({
+          allocatedPoints: {
+            ...state.allocatedPoints,
+            [skillId]: currentLevel + 1
+          }
+        }));
+        return true;
+      }
+
       const pointCost = nextLevel.pointsRequired;
       
       if (state.availablePoints < pointCost) return false;
@@ -205,11 +222,14 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const state = get();
       if (!state.canDeallocatePoint(skillId)) return false;
 
+      const skill = state.skills.find(s => s.id === skillId);
+      if (!skill) return false;
+
       const currentLevel = state.allocatedPoints[skillId] || 0;
       if (currentLevel <= 0) return false;
 
-      const skill = state.skills.find(s => s.id === skillId);
-      if (!skill) return false;
+      // Don't allow deallocation of level 1 for zero-requirement skills
+      if (hasZeroRequirements(skill) && currentLevel === 1) return false;
 
       const currentLevelData = skill.levels[currentLevel - 1];
       const pointRefund = currentLevelData.pointsRequired;
@@ -229,6 +249,14 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const state = get();
       const totalSpentPoints = state.getTotalSpentPoints();
       
+      // Keep level 1 for zero-requirement skills when clearing
+      const baseAllocations: Record<string, number> = {};
+      state.skills.forEach(skill => {
+        if (hasZeroRequirements(skill)) {
+          baseAllocations[skill.id] = 1;
+        }
+      });
+      
       set(state => ({
         availablePoints: state.availablePoints + totalSpentPoints,
         keystonePoints: {
@@ -236,7 +264,7 @@ export const useSkillStore = create<SkillState>((set, get) => {
           tech: 0,
           hardware: 0
         },
-        allocatedPoints: {}
+        allocatedPoints: baseAllocations
       }));
     },
 
@@ -244,10 +272,18 @@ export const useSkillStore = create<SkillState>((set, get) => {
       // Force the available points to be 150
       const points = DEFAULT_POINTS;
       
+      // Initialize allocatedPoints with level 1 for all zero-requirement skills
+      const initialAllocations: Record<string, number> = {};
+      system.skills.forEach(skill => {
+        if (hasZeroRequirements(skill)) {
+          initialAllocations[skill.id] = 1;
+        }
+      });
+      
       set({
         skills: system.skills || [],
         keystones: system.keystones || [],
-        allocatedPoints: {},
+        allocatedPoints: initialAllocations,
         keystonePoints: {
           body: 0,
           tech: 0,
