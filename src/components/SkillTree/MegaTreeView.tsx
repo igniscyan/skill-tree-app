@@ -56,8 +56,8 @@ export const MegaTreeView: React.FC = () => {
   const renderFoundationPerks = (keystoneId: string) => {
     const perks = foundationPerks[keystoneId as keyof typeof foundationPerks];
     const points = getKeystonePoints(keystoneId);
-    const showEnhanced = points >= 26;
-    const showAdvanced = points >= 50;
+    // const showEnhanced = points >= 26;
+    // const showAdvanced = points >= 50;
 
     const formatValue = (value: number) => {
       return value.toFixed(value < 1 ? 1 : 0) + '%';

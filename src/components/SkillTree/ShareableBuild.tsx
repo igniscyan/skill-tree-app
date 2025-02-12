@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSkillStore } from '../../stores/useSkillStore';
 import * as htmlToImage from 'html-to-image';
-import { Skill } from '../../types/skillTree';
+// import { Skill } from '../../types/skillTree';
 
 interface ShareableBuildProps {
   onClose: () => void;
