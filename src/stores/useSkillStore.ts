@@ -2,6 +2,33 @@
 import { create } from 'zustand';
 import type { SkillSystem, Skill, Keystone } from '../types/skillTree';
 
+interface FoundationPerks {
+  body: {
+    weaponHandlingPenalty: number;
+    acceleration: number;
+    maxVitalsDefenseReduction: number;
+    backupHeavyDamageReduction: number;
+    aerialManeuver: boolean;
+    bleedFireDamageReduction: number;
+  };
+  tech: {
+    nanoWireRange: number;
+    coreDamageReduction: number;
+    scanAugmentCooldown: number;
+    baseDefenseRegen: number;
+    debuffDefenseDamage: number;
+    coreActivationCost: number;
+  };
+  hardware: {
+    reserveAmmo: number;
+    loadoutSpeedPenalty: number;
+    primaryStimCooldown: number;
+    explosiveDamageResistance: number;
+    extraWeaponModSlot: boolean;
+    deviceCooldowns: number;
+  };
+}
+
 interface SkillState {
   // State
   availablePoints: number;
@@ -28,6 +55,7 @@ interface SkillState {
   getKeystonePoints: (keystoneId: string) => number;
   meetsRequirements: (skillId: string) => boolean;
   getTotalSpentPoints: () => number;
+  getFoundationPerks: () => FoundationPerks;
 }
 
 export const useSkillStore = create<SkillState>((set, get) => {
@@ -60,6 +88,26 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const prereqLevel = state.allocatedPoints[prereqId] || 0;
       return prereqLevel > 0;
     });
+  };
+
+  // Helper function to calculate scaled perk value
+  const calculatePerkValue = (points: number, maxValue: number): number => {
+    if (points < 26) return 0;
+    if (points >= 50) return maxValue; // Return full value at 50
+    
+    // Calculate scaling for points between 26-49
+    const scale = (points - 25) / 24; // Changed from 25 to 24 to scale between 26-49
+    return maxValue * scale;
+  };
+
+  // Helper function to calculate threshold perk value
+  const calculateThresholdValue = (points: number, maxValue: number): number => {
+    return points >= 25 ? maxValue : 0;
+  };
+
+  // Helper function to calculate boolean perk
+  const calculateBooleanPerk = (points: number): boolean => {
+    return points >= 50;
   };
 
   return {
@@ -260,6 +308,40 @@ export const useSkillStore = create<SkillState>((set, get) => {
       }, 0);
       
       return keystonePointsSpent + skillPointsSpent;
+    },
+
+    getFoundationPerks: () => {
+      const state = get();
+      const bodyPoints = state.keystonePoints.body || 0;
+      const techPoints = state.keystonePoints.tech || 0;
+      const hardwarePoints = state.keystonePoints.hardware || 0;
+
+      return {
+        body: {
+          weaponHandlingPenalty: calculateThresholdValue(bodyPoints, 25),
+          acceleration: calculatePerkValue(bodyPoints, 10),
+          maxVitalsDefenseReduction: calculatePerkValue(bodyPoints, 10),
+          backupHeavyDamageReduction: calculatePerkValue(bodyPoints, 5),
+          aerialManeuver: calculateBooleanPerk(bodyPoints),
+          bleedFireDamageReduction: calculatePerkValue(bodyPoints, 25)
+        },
+        tech: {
+          nanoWireRange: calculateThresholdValue(techPoints, 50),
+          coreDamageReduction: calculatePerkValue(techPoints, 20),
+          scanAugmentCooldown: calculatePerkValue(techPoints, 20),
+          baseDefenseRegen: calculatePerkValue(techPoints, 20),
+          debuffDefenseDamage: calculatePerkValue(techPoints, 5),
+          coreActivationCost: calculatePerkValue(techPoints, 25)
+        },
+        hardware: {
+          reserveAmmo: calculateThresholdValue(hardwarePoints, 100),
+          loadoutSpeedPenalty: calculatePerkValue(hardwarePoints, 25),
+          primaryStimCooldown: calculatePerkValue(hardwarePoints, 50),
+          explosiveDamageResistance: calculatePerkValue(hardwarePoints, 25),
+          extraWeaponModSlot: calculateBooleanPerk(hardwarePoints),
+          deviceCooldowns: calculatePerkValue(hardwarePoints, 25)
+        }
+      };
     }
   };
 });

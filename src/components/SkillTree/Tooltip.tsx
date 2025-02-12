@@ -17,7 +17,9 @@ export const Tooltip: React.FC<TooltipProps> = ({
   canAct = false 
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect if device is mobile
@@ -50,6 +52,44 @@ export const Tooltip: React.FC<TooltipProps> = ({
     };
   }, [isVisible, isMobile]);
 
+  // Update tooltip position
+  const updatePosition = () => {
+    if (!tooltipRef.current || !contentRef.current) return;
+    
+    const rect = tooltipRef.current.getBoundingClientRect();
+    const contentRect = contentRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let x = rect.left;
+    let y = rect.bottom + 8; // 8px offset from the trigger element
+
+    // Adjust horizontal position if tooltip would overflow viewport
+    if (x + contentRect.width > viewportWidth) {
+      x = viewportWidth - contentRect.width - 16; // 16px margin from viewport edge
+    }
+
+    // If tooltip would overflow bottom of viewport, show it above the trigger element
+    if (y + contentRect.height > viewportHeight) {
+      y = rect.top - contentRect.height - 8;
+    }
+
+    setPosition({ x, y });
+  };
+
+  useEffect(() => {
+    if (isVisible && !isMobile) {
+      updatePosition();
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
+      
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+      };
+    }
+  }, [isVisible, isMobile]);
+
   const handleClick = (e: React.MouseEvent) => {
     if (isMobile) {
       e.stopPropagation();
@@ -63,9 +103,17 @@ export const Tooltip: React.FC<TooltipProps> = ({
   return (
     <div 
       ref={tooltipRef}
-      className="relative"
-      onMouseEnter={() => !isMobile && setIsVisible(true)}
-      onMouseLeave={() => !isMobile && setIsVisible(false)}
+      className="relative inline-block"
+      onMouseEnter={() => {
+        if (!isMobile) {
+          setIsVisible(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isMobile) {
+          setIsVisible(false);
+        }
+      }}
       onClick={handleClick}
     >
       {children}
@@ -74,7 +122,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         <>
           {isMobile ? (
             // Mobile Modal
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
               <div 
                 className="w-full max-w-lg max-h-[80vh] overflow-auto p-4 bg-cyber-bg-dark border border-cyber-border rounded shadow-lg"
                 onClick={e => e.stopPropagation()}
@@ -113,7 +161,16 @@ export const Tooltip: React.FC<TooltipProps> = ({
             </div>
           ) : (
             // Desktop Tooltip
-            <div className="absolute z-50 w-96 p-4 mt-2 bg-cyber-bg-dark border border-cyber-border rounded shadow-lg">
+            <div
+              ref={contentRef}
+              style={{
+                position: 'fixed',
+                left: `${position.x}px`,
+                top: `${position.y}px`,
+                maxHeight: '80vh'
+              }}
+              className="z-[100] w-96 p-4 overflow-y-auto bg-cyber-bg-dark border border-cyber-border rounded shadow-lg"
+            >
               {content}
             </div>
           )}
