@@ -32,6 +32,7 @@ interface FoundationPerks {
 interface SkillState {
   // State
   availablePoints: number;
+  matrixLevel: number;
   keystonePoints: Record<string, number>;
   allocatedPoints: Record<string, number>;
   skills: Skill[];
@@ -47,6 +48,7 @@ interface SkillState {
   clearAllPoints: () => void;
   loadSkillSystem: (system: SkillSystem) => void;
   getCategories: () => string[];
+  setMatrixLevel: (level: number) => void;
   
   // Getters
   canAllocatePoint: (skillId: string) => boolean;
@@ -58,7 +60,8 @@ interface SkillState {
   getFoundationPerks: () => FoundationPerks;
 }
 
-const DEFAULT_POINTS = 150;
+const DEFAULT_BASE_POINTS = 125;
+const MAX_MATRIX_LEVEL = 5;
 
 const hasZeroRequirements = (skill: Skill): boolean => {
   return skill.requirements.body === 0 && 
@@ -68,7 +71,8 @@ const hasZeroRequirements = (skill: Skill): boolean => {
 
 export const useSkillStore = create<SkillState>((set, get) => {
   const initialState = {
-    availablePoints: DEFAULT_POINTS,
+    availablePoints: DEFAULT_BASE_POINTS,
+    matrixLevel: 0,
     keystonePoints: {
       body: 0,
       tech: 0,
@@ -268,9 +272,21 @@ export const useSkillStore = create<SkillState>((set, get) => {
       }));
     },
 
+    setMatrixLevel: (level) => {
+      if (level < 0 || level > MAX_MATRIX_LEVEL) return;
+      
+      const currentLevel = get().matrixLevel;
+      const pointDiff = (level - currentLevel) * 5;
+      
+      set(state => ({
+        matrixLevel: level,
+        availablePoints: state.availablePoints + pointDiff
+      }));
+    },
+
     loadSkillSystem: (system) => {
-      // Force the available points to be 150
-      const points = DEFAULT_POINTS;
+      // Initialize with base points
+      const points = DEFAULT_BASE_POINTS;
       
       // Initialize allocatedPoints with level 1 for all zero-requirement skills
       const initialAllocations: Record<string, number> = {};
@@ -290,7 +306,8 @@ export const useSkillStore = create<SkillState>((set, get) => {
           hardware: 0
         },
         activeCategory: system.skills?.[0]?.category || '',
-        availablePoints: points
+        availablePoints: points,
+        matrixLevel: 0
       });
     },
 
@@ -350,6 +367,13 @@ export const useSkillStore = create<SkillState>((set, get) => {
       const skillPointsSpent = Object.entries(state.allocatedPoints).reduce((total, [skillId, level]) => {
         const skill = state.skills.find(s => s.id === skillId);
         if (!skill) return total;
+        
+        // Skip level 1 for zero-requirement skills since they're free
+        if (hasZeroRequirements(skill) && level === 1) {
+          // Only count points spent beyond level 1
+          return total + skill.levels.slice(1, level).reduce((sum, l) => sum + l.pointsRequired, 0);
+        }
+        
         return total + skill.levels.slice(0, level).reduce((sum, l) => sum + l.pointsRequired, 0);
       }, 0);
       

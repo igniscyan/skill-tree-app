@@ -12,11 +12,11 @@ function App() {
     // Force a clean initialization
     loadSkillSystem({
       ...sampleSystem,
-      availablePoints: 150
+      availablePoints: 125
     });
 
     // Additional safety check
-    setAvailablePoints(150);
+    setAvailablePoints(125);
 
     return () => {
       loadSkillSystem({

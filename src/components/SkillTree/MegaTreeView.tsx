@@ -17,10 +17,14 @@ export const MegaTreeView: React.FC = () => {
     setActiveCategory,
     getCategories,
     clearAllPoints,
-    getTotalSpentPoints
+    getTotalSpentPoints,
+    matrixLevel,
+    setMatrixLevel
   } = useSkillStore();
 
   const [showShareModal, setShowShareModal] = React.useState(false);
+  const [showMatrixInfo, setShowMatrixInfo] = React.useState(false);
+  const [activeInterval, setActiveInterval] = React.useState<NodeJS.Timeout | null>(null);
 
   const categories = getCategories();
   const foundationPerks = getFoundationPerks();
@@ -52,6 +56,35 @@ export const MegaTreeView: React.FC = () => {
         return 'text-cyber-cyan border-cyber-cyan hover:bg-cyber-cyan/10';
     }
   };
+
+  const startAddingPoints = (keystoneId: string, amount: number) => {
+    if (activeInterval) clearInterval(activeInterval);
+    
+    const addPoints = () => {
+      const currentPoints = getKeystonePoints(keystoneId);
+      setKeystonePoints(keystoneId, currentPoints + amount);
+    };
+
+    // Initial click
+    addPoints();
+
+    // Start interval for continuous addition
+    const interval = setInterval(addPoints, 100);
+    setActiveInterval(interval);
+  };
+
+  const stopAddingPoints = () => {
+    if (activeInterval) {
+      clearInterval(activeInterval);
+      setActiveInterval(null);
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (activeInterval) clearInterval(activeInterval);
+    };
+  }, [activeInterval]);
 
   const renderFoundationPerks = (keystoneId: string) => {
     const perks = foundationPerks[keystoneId as keyof typeof foundationPerks];
@@ -193,12 +226,58 @@ export const MegaTreeView: React.FC = () => {
         {/* Points Display and Clear Button */}
         <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="text-cyber-text text-lg sm:text-xl">
-            <span>Available Points: </span>
-            <span className="text-cyber-cyan font-bold">{availablePoints}</span>
-            <span className="text-cyber-text/60 text-sm ml-4">
-              Total Spent: {getTotalSpentPoints()}
-            </span>
+            <div className="flex items-center gap-2">
+              <span>Available Points: </span>
+              <span className="text-cyber-cyan font-bold">{availablePoints}</span>
+              <span className="text-cyber-text/60 text-sm">
+                Total Spent: {getTotalSpentPoints()}
+              </span>
+              
+              <div className="relative ml-4 flex items-center gap-2">
+                <span className="text-cyber-text/80">Matrix Level:</span>
+                <div className="flex gap-1">
+                  {[...Array(6)].map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setMatrixLevel(i)}
+                      className={`w-6 h-6 rounded flex items-center justify-center border transition-colors
+                        ${i <= matrixLevel 
+                          ? 'bg-cyber-cyan/20 border-cyber-cyan text-cyber-cyan' 
+                          : 'bg-cyber-bg border-cyber-text/20 text-cyber-text/20'}`}
+                    >
+                      {i}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="relative">
+                  <button
+                    onMouseEnter={() => setShowMatrixInfo(true)}
+                    onMouseLeave={() => setShowMatrixInfo(false)}
+                    className="w-5 h-5 rounded-full border border-cyber-text/40 text-cyber-text/40 
+                             flex items-center justify-center text-sm hover:border-cyber-cyan hover:text-cyber-cyan"
+                  >
+                    ?
+                  </button>
+                  
+                  {showMatrixInfo && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-64 p-3 
+                                  bg-cyber-bg-dark border border-cyber-border rounded-lg z-10
+                                  text-sm text-cyber-text/80">
+                      <p className="mb-2">Matrix Upgrade System:</p>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Base Matrix starts at Level 0 with 125 points</li>
+                        <li>You can upgrade the Matrix up to Level 5</li>
+                        <li>Each upgrade grants +5 additional points</li>
+                        <li>Maximum points at Level 5: 150</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
+          
           <div className="flex gap-2 w-full sm:w-auto">
             <button
               onClick={() => setShowShareModal(true)}
@@ -245,7 +324,9 @@ export const MegaTreeView: React.FC = () => {
                 
                 <div className="flex gap-2 mb-4">
                   <button
-                    onClick={() => setKeystonePoints(keystone.id, getKeystonePoints(keystone.id) + 1)}
+                    onMouseDown={() => startAddingPoints(keystone.id, 1)}
+                    onMouseUp={stopAddingPoints}
+                    onMouseLeave={stopAddingPoints}
                     disabled={availablePoints <= 0}
                     className={`flex-1 px-3 py-1 bg-cyber-bg border rounded transition-colors
                       ${getKeystoneColor(keystone)}
@@ -254,13 +335,48 @@ export const MegaTreeView: React.FC = () => {
                     +
                   </button>
                   <button
-                    onClick={() => setKeystonePoints(keystone.id, getKeystonePoints(keystone.id) - 1)}
+                    onMouseDown={() => startAddingPoints(keystone.id, -1)}
+                    onMouseUp={stopAddingPoints}
+                    onMouseLeave={stopAddingPoints}
                     disabled={getKeystonePoints(keystone.id) <= 0}
                     className="flex-1 px-3 py-1 bg-cyber-bg border border-cyber-red text-cyber-red rounded
                              hover:bg-cyber-red hover:text-cyber-bg-dark transition-colors
                              disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     -
+                  </button>
+                </div>
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onMouseDown={() => startAddingPoints(keystone.id, 5)}
+                    onMouseUp={stopAddingPoints}
+                    onMouseLeave={stopAddingPoints}
+                    disabled={availablePoints < 5}
+                    className={`flex-1 px-3 py-1 bg-cyber-bg border rounded transition-colors
+                      ${getKeystoneColor(keystone)}
+                      disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    +5
+                  </button>
+                  <button
+                    onMouseDown={() => startAddingPoints(keystone.id, -5)}
+                    onMouseUp={stopAddingPoints}
+                    onMouseLeave={stopAddingPoints}
+                    disabled={getKeystonePoints(keystone.id) < 5}
+                    className="flex-1 px-3 py-1 bg-cyber-bg border border-cyber-red text-cyber-red rounded
+                             hover:bg-cyber-red hover:text-cyber-bg-dark transition-colors
+                             disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    -5
+                  </button>
+                  <button
+                    onClick={() => setKeystonePoints(keystone.id, 50)}
+                    disabled={availablePoints < (50 - getKeystonePoints(keystone.id))}
+                    className={`flex-1 px-3 py-1 bg-cyber-bg border rounded transition-colors
+                      ${getKeystoneColor(keystone)}
+                      disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    Max
                   </button>
                 </div>
 
