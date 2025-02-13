@@ -164,7 +164,7 @@ export const MegaTreeView: React.FC = () => {
         {/* Enhancement Section (26-50) */}
         <div className={points >= 26 ? '' : 'opacity-40'}>
           <div className="text-cyber-cyan mb-2">
-            :: Enhancement: {Math.max(26, Math.min(49, points))}+
+            :: Enhancement: 26+
             {points >= 26 && points < 50 && (
               <span className="text-cyber-text/60 text-xs ml-2">
                 ({Math.floor(((points - 25) / 24) * 100)}% of max bonus)
