@@ -135,6 +135,22 @@ export const useSkillStore = create<SkillState>((set, get) => {
     return points >= 50;
   };
 
+  const calculateRequiredFoundationPoints = (skill: Skill, currentKeystonePoints: Record<string, number>) => {
+    const required = { body: 0, tech: 0, hardware: 0 };
+    let totalPointsNeeded = 0;
+
+    // Calculate how many points we need to add to each foundation
+    Object.entries(skill.requirements).forEach(([key, value]) => {
+      const current = currentKeystonePoints[key] || 0;
+      if (current < value) {
+        required[key as keyof typeof required] = value - current;
+        totalPointsNeeded += value - current;
+      }
+    });
+
+    return { required, totalPointsNeeded };
+  };
+
   return {
     ...initialState,
 
@@ -186,8 +202,6 @@ export const useSkillStore = create<SkillState>((set, get) => {
 
     allocatePoint: (skillId) => {
       const state = get();
-      if (!state.canAllocatePoint(skillId)) return false;
-
       const skill = state.skills.find(s => s.id === skillId);
       if (!skill) return false;
 
@@ -207,15 +221,34 @@ export const useSkillStore = create<SkillState>((set, get) => {
         return true;
       }
 
+      // Calculate total points needed (skill cost + any required foundation points)
       const pointCost = nextLevel.pointsRequired;
-      
-      if (state.availablePoints < pointCost) return false;
+      const { required, totalPointsNeeded } = calculateRequiredFoundationPoints(skill, state.keystonePoints);
+      const totalCost = pointCost + totalPointsNeeded;
 
+      // Check if we have enough points for both the skill and foundation requirements
+      if (state.availablePoints < totalCost) return false;
+
+      // First, allocate the foundation points if needed
+      if (totalPointsNeeded > 0) {
+        Object.entries(required).forEach(([key, value]) => {
+          if (value > 0) {
+            const currentPoints = state.keystonePoints[key];
+            state.keystonePoints[key] = currentPoints + value;
+          }
+        });
+      }
+
+      // Then allocate the skill point
       set(state => ({
-        availablePoints: state.availablePoints - pointCost,
+        availablePoints: state.availablePoints - totalCost,
         allocatedPoints: {
           ...state.allocatedPoints,
           [skillId]: currentLevel + 1
+        },
+        keystonePoints: {
+          ...state.keystonePoints,
+          ...required
         }
       }));
 

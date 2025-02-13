@@ -25,6 +25,7 @@ export const MegaTreeView: React.FC = () => {
   const [showShareModal, setShowShareModal] = React.useState(false);
   const [showMatrixInfo, setShowMatrixInfo] = React.useState(false);
   const [activeInterval, setActiveInterval] = React.useState<NodeJS.Timeout | null>(null);
+  const [currentDelay, setCurrentDelay] = React.useState<number>(250); // 0.25s initial delay
 
   const categories = getCategories();
   const foundationPerks = getFoundationPerks();
@@ -58,18 +59,35 @@ export const MegaTreeView: React.FC = () => {
   };
 
   const startAddingPoints = (keystoneId: string, amount: number) => {
-    if (activeInterval) clearInterval(activeInterval);
+    if (activeInterval) {
+      clearInterval(activeInterval);
+      setCurrentDelay(250); // Reset delay when starting new interval
+    }
     
     const addPoints = () => {
       const currentPoints = getKeystonePoints(keystoneId);
       setKeystonePoints(keystoneId, currentPoints + amount);
+      
+      // Accelerate the interval
+      setCurrentDelay(prev => {
+        const newDelay = Math.max(100, prev - 50); // Decrease by 0.05s, min 0.1s
+        
+        if (newDelay !== prev && activeInterval) {
+          // Restart interval with new delay
+          clearInterval(activeInterval);
+          const newInterval = setInterval(addPoints, newDelay);
+          setActiveInterval(newInterval);
+        }
+        
+        return newDelay;
+      });
     };
 
     // Initial click
     addPoints();
 
-    // Start interval for continuous addition
-    const interval = setInterval(addPoints, 100);
+    // Start interval with initial delay
+    const interval = setInterval(addPoints, currentDelay);
     setActiveInterval(interval);
   };
 
@@ -77,12 +95,16 @@ export const MegaTreeView: React.FC = () => {
     if (activeInterval) {
       clearInterval(activeInterval);
       setActiveInterval(null);
+      setCurrentDelay(250); // Reset delay when stopping
     }
   };
 
   React.useEffect(() => {
     return () => {
-      if (activeInterval) clearInterval(activeInterval);
+      if (activeInterval) {
+        clearInterval(activeInterval);
+        setCurrentDelay(250);
+      }
     };
   }, [activeInterval]);
 

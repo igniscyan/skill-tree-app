@@ -12,14 +12,35 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
   const { 
     getKeystonePoints, 
     getSkillLevel, 
-    canAllocatePoint, 
+    canAllocatePoint,
     allocatePoint, 
     deallocatePoint,
-    meetsRequirements 
+    meetsRequirements,
+    availablePoints
   } = useSkillStore();
 
   const level = getSkillLevel(skill.id);
-  const canUpgrade = meetsRequirements(skill.id) && canAllocatePoint(skill.id);
+  const canUpgrade = canAllocatePoint(skill.id);
+  
+  // Calculate total points needed for this skill
+  const getRequiredPoints = () => {
+    if (!skill.levels[level]) return 0;
+    const skillCost = skill.levels[level].pointsRequired;
+    
+    // Calculate foundation points needed
+    let foundationCost = 0;
+    Object.entries(skill.requirements).forEach(([key, value]) => {
+      const current = getKeystonePoints(key);
+      if (current < value) {
+        foundationCost += value - current;
+      }
+    });
+    
+    return skillCost + foundationCost;
+  };
+
+  const totalPointsNeeded = getRequiredPoints();
+  const canAfford = availablePoints >= totalPointsNeeded;
 
   const handleRightClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -52,6 +73,11 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
                 </li>
               ))}
             </ul>
+            {index === level && !meetsRequirements(skill.id) && canAfford && (
+              <div className="text-cyber-cyan/60 text-xs mt-2">
+                Click to automatically allocate required foundation points
+              </div>
+            )}
             {index === level && canUpgrade && (
               <div className="text-cyber-cyan/60 text-xs mt-2">
                 Available to unlock
@@ -74,7 +100,7 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
       content={tooltipContent}
       onAction={() => allocatePoint(skill.id)}
       actionText={level === 0 ? "Unlock Skill" : "Upgrade Skill"}
-      canAct={canUpgrade}
+      canAct={canAfford}
     >
       <div
         className={`
@@ -83,7 +109,7 @@ export const CompactSkillNode: React.FC<CompactSkillNodeProps> = ({ skill }) => 
             ? 'bg-cyber-bg border-cyber-cyan hover:bg-cyber-bg-dark' 
             : 'bg-cyber-bg-dark border-cyber-border opacity-60'}
           ${level > 0 ? 'ring-1 ring-cyber-cyan ring-opacity-50' : ''}
-          ${canUpgrade ? 'cursor-pointer' : 'cursor-default'}
+          ${canAfford ? 'cursor-pointer' : 'cursor-default'}
         `}
         onContextMenu={handleRightClick}
       >
